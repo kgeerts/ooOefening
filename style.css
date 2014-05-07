@@ -1,0 +1,14 @@
+/* 
+    Document   : style
+    Created on : Oct 11, 2013, 8:19:43 AM
+    Author     : adminkris
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+root { 
+    display: block;
+    alignment-adjust: central;
+    top: inherit;
+}
+

@@ -1,0 +1,34 @@
+<?php
+    require_once('news.class.php');
+ 
+    $mBaseURL='/news.html?id=';
+    
+    
+    $Newslist = new newsList(1,3);
+    $Allrows = $Newslist->getAllrows(0);
+/*
+    echo "<pre>";
+        print_r($Allrows);
+    echo "</pre>";
+    */
+    
+    $buffer = '<td><dl>';  //
+        foreach($Allrows as $record) {
+         $buffer .= "<dt><a href=".$mBaseURL.$record['news_id'].">".$record['news_header']."</a></dt>";
+         $buffer .= "<dd>date:".$record['date']."</dd>";
+         if (strlen($record['news_main'])>100)
+             {
+            $buffer .= "<dd>".substr($record['news_main'],1,100)."..."."</dd>";
+             }
+         else {
+             $buffer .= "<dd>".$record['news_main']."</dd>";
+     
+         }
+            }
+    $buffer .= '<td><dl>';
+    echo $buffer;
+    
+    
+    
+
+?>
