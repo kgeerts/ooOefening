@@ -1,5 +1,7 @@
 <?php
 
+require_once '../config.php';
+
 require_once($serverpath['db'] . '/logger.php');
 
 require_once($serverpath['objects'] . '/assigned_books.php');
