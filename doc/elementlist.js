@@ -1,0 +1,3 @@
+
+var ApiGen = ApiGen || {};
+ApiGen.elements = [["f","alterbestelling()"],["c","assigned_book"],["c","Bestelling"],["c","BestellingDAO"],["c","Boek"],["c","BoekDAO"],["c","CI_Controller"],["c","CI_DB_Driver"],["c","CI_Model"],["f","clean_session()"],["f","close_session()"],["c","DataManager"],["f","destroy_session()"],["f","doQuery()"],["c","GenClass"],["f","get_instance()"],["f","getConnection()"],["c","GetterSetterGen"],["c","Klant"],["c","Logger"],["c","newPHPClass"],["f","Nieuwebestelling()"],["f","open_session()"],["c","OpslagMedium"],["c","propertyDef"],["c","PropertyObject"],["f","read_session()"],["c","Service"],["c","subclass"],["c","superclass"],["f","write_session()"]];

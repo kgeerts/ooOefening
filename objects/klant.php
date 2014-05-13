@@ -190,15 +190,7 @@ class Klant extends PropertyObject
    }
                  
                  
-    private function valtodata($key,$value){
-      $datafieldname = $this->getDatafieldname($key);
-      if (is_null($datafieldname)==false){  //if there is a datafield
-          $this->data->{$datafieldname}=$value;
-       }
-      else {
-          $this->data->{$key}=$value ; //if there is NO translation we expect the name of the data is the same as the key
-      }
-    }
+    
     
     //puts the queried data into the dataobject
     private function convertdata($data) {

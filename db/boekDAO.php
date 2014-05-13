@@ -18,18 +18,22 @@
 require_once($serverpath['db'] . '/propertyobject.php');
 require_once($serverpath['db'] . '/opslagmedium.php');
 require_once($serverpath['db'] . '/propDefinition.php');
-require_once($serverpath['db'] . '/logger.php');
-require_once($serverpath['objects'].'/boek.php');
 
+require_once($serverpath['db'] . '/logger.php');
+
+require_once($serverpath['objects'] . '/ObjFact_Book.php');
 
 
 
 class BoekDAO extends PropertyObject {
     const tablename = 'Boek';
-    function __construct($isbnnr = null) {
+    private $BookObjFactory ;
+
+    
+    function __construct($ObjFactory) {
         parent::__construct(null);
      
-
+        $this->BookObjFactory = $ObjFactory;
         $this->propertyTable['id'] = new propertyDef('id', null, 'int');
         $this->propertyTable['titel'] = new propertyDef('titel');
         $this->propertyTable['isbnnr'] = new propertyDef('isbnnr');
@@ -37,98 +41,79 @@ class BoekDAO extends PropertyObject {
         $this->propertyTable['auteur'] = new propertyDef('auteur');
         $this->propertyTable['uitgever'] = new propertyDef('uitgever');
 
-
-        if (is_null($isbnnr) == false) {
-            $this->retrieveByISBN($isbnnr);
-        } else {
-            $this->data = null;
-        }
     }
-
-    public function MakeObject(){
-        $object = new Boek();
-        $object->setId($this->data->id);
-        $object->setIsbn($this->data->isbnnr);
-        $object->setPrice($this->data->prijs);
-        $object->setTitel($this->data->titel);
-        $object->setUitgever($this->data->uitgever);
-        $object->setAuteur($this->data->auteur);
-
+    /**
+     * Creates an object of the type book
+     * its based on ObjFact_book 
+    **/
+    private function GetBookObject(){
+        $object = $this->BookObjFactory->create($this->data);
         return $object;
    }
+   
+     /**
+     * @return gives back an empty book object
+    **/
+    public function GetEmptyBook () {
+        return $this->GetBookObject();
+    }
+   
+ 
+    /**
+     * @param1 is the id of the searched boek
+     * @return nothing --get the return back by GetObject
+    **/
     public function retrieveByID($id) {
 
         $query = $this->getDatafieldname('id') . '=' . $id; // get the database name from getDatafield
         $this->convertdata(OpslagMedium::getObjectdataOnQuery($this::tablename, $query));
-        
+        return $this->GetBookObject();
     }
      /**
-     * 
-     * 
-     * @isbnnr is the isbn in form of 000-0000000000
-     * @param2 is het tweede getal dat we willen optellen 
+
+     * @param1 is the isbn in form of 000-0000000000
      * @return the function does return an object of the form book
-     * 
-     * @version 1.1
-     * 
     **/
-    function retrieveByISBN(string $isbnnr) {
+    function retrieveByISBN($isbnnr) {
 
         $query = $this->getDatafieldname('isbnnr') . '=\'' . $isbnnr . '\' '; // get the database name from getDatafield
         $this->convertdata(OpslagMedium::getObjectdataOnQuery($this::tablename, $query));
-        
+        return $this->GetBookObject();
     }
     
     
-
-    //gives back the data from this object
-    public function getData() {
-        return $this->data;
-    }
-
-    //Unlocks an account 
-    // gives back true if the account is active
-
-
-    
-    
-    public function save($book) {
-
-        
-        $properties = $book->giveAllPropertiesArray();// gets all the properties in the form of a array
+    /**
+     * @param1 is the book I want to save
+     * @return the saved object
+    **/
+  public function save(Boek $book) {
+        $properties = $book->giveAllPropertiesArray(); // gets all the properties in the form of a array
         foreach ($properties as $key => $value) {
             $this->valtodata($key, $value);
         }
         $id = $book->id;
-        if ($book->id == 0 ){
-            $retid = OpslagMedium::storeObject($this::tablename, $properties) ;
-  
+        if ($book->id == 0) {
+            $retid = OpslagMedium::storeObject($this::tablename, $properties);
+        } else {
+            $retid = OpslagMedium::updateObject($this::tablename, $book->id, $book->changedProperties);
         }
-        else {
-            $retid = OpslagMedium::updateObject(tablename, $this->id, $this->changedProperties);
-        
-        }
-
         if ($retid != 0) {
 
             $query = $this->getDatafieldname('id') . '=' . $retid . ' ';
             $this->convertdata(OpslagMedium::getObjectdataOnQuery($this::tablename, $query));
-
             $retobj->result = true;
-            return $this->MakeObject();
+            return $this->GetBookObject();
         }
     }
 
-    private function valtodata($key, $value) {
-        $datafieldname = $this->getDatafieldname($key);
-        if (is_null($datafieldname) == false) {  //if there is a datafield
-            $this->data->{$datafieldname} = $value;
-        } else {
-            $this->data->{$key} = $value; //if there is NO translation we expect the name of the data is the same as the key
-        }
-    }
-
-    //puts the queried data into the dataobject
+ 
+   
+    /**
+     * Converts the data from the query = $data and puts it into $this->data
+     * 
+     * @param1 data of the object 
+     * @return is the $this->$data object 
+     * */
     private function convertdata($data) {
         $this->data = null;
         if (is_null($data)) {
@@ -143,12 +128,8 @@ class BoekDAO extends PropertyObject {
                 if (is_null($datafieldname) == false) {
                     $value = $data->{$datafieldname};
                 }
-
-
                 if ($obj->logicdefined == true) {
-
                     if ($key == 'loggedIn') {
-
                         //   $this->valtodata($key,false);
                     }
                     // here logic comes in of the object
@@ -162,17 +143,6 @@ class BoekDAO extends PropertyObject {
             unset($obj);
         }
     }
-
-    // makes a return object 
-    private function getRetObj($result = false, $number = 0, $mess = '') {
-        $retObj = null;
-        $retObj->result = $result;
-        $retObj->number = $number;
-        $retObj->mess = $mess;
-        return $retObj;
-    }
-
-  
 
 }
 

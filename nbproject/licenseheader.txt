@@ -1,0 +1,8 @@
+<#if licenseFirst??>
+${licenseFirst}
+</#if>
+${licensePrefix}licences to it8-projects.com
+${licensePrefix}author = kjtgeerts@gmail.com ${licensePrefix}
+<#if licenseLast??>
+${licenseLast}
+</#if>

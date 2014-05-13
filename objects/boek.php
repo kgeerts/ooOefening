@@ -33,20 +33,15 @@ class Boek extends GenDataClass {
     
     
     
-    function __construct() {
-        
+    function __construct() {  
         $this->id=0;
         $this->titel='';
         $this->isbnnr='';
-        $this->prijs='';
+        $this->prijs='';  
         $this->auteur='';
         $this->uitgever='';
-
     }
-    
-
-
-      public function setIsbn ($isbn){
+    public function setIsbn ($isbn){
         $this->isbnnr=$isbn;
     }
      public function setPrice ($prijs){
@@ -61,10 +56,6 @@ class Boek extends GenDataClass {
       public function setUitgever ($uitgever){
         $this->uitgever=$uitgever;
     }
-    
-    
-  
-
 
 
     public function getId() {
@@ -74,8 +65,6 @@ class Boek extends GenDataClass {
     public function getISBNnr() {
         return $this->isbnnr;
     }
-   
-    
    
 }
 

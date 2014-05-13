@@ -13,6 +13,7 @@ $serverpath= array(
     "site" =>$basepath.$sitename,
     "css" =>$basepath.$sitename.'/css',
     "db" =>$basepath.$sitename.'/db',
+    "di" =>$basepath.$sitename.'/DI_Containers',
     "images" =>$basepath.$sitename.'/images',
     "objects" =>$basepath.$sitename.'/objects',
     "com" =>$basepath.$sitename.'/com',

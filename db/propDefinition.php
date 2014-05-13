@@ -1,5 +1,24 @@
 <?php
 
+/**
+ * propDefinition defines an object definition
+ * 
+ * This is an object that defines the databasefieldname, if it is property is logic defined
+ * that is not from the database 
+ * and if the data has to be converted when we put it in the property value
+ * so that the type is correct  
+ * 
+ * @package DAO
+ * @author ADMINKRIS <kjtgeerts@gmail.com>
+ * @version 1.1
+ * @Copyright Never
+ * @link http://www.it8-projects.com
+ * 
+ */
+
+
+
+
 Class propertyDef {
 
     public $fieldName = '';

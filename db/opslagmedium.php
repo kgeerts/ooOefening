@@ -17,18 +17,18 @@ class OpslagMedium {
         return $db_selected;
     }
 
-    public function storeObject($table, $object) {
+    public function storeObject($table, $properties) {
         $link = OpslagMedium::_getConnection();
         $sql = "INSERT INTO " . $table . " ";
         $first = TRUE;
-        foreach ($object as $key) {
+
+        foreach ($properties as $key=>$value) {
             $fieldname = $this->getDatafieldname($key);
-            if (!is_null($fieldname)) {  //only if we find a translation we are going to update      
+            if (!is_null($fieldname) & ($fieldname <> 'id')) {  //only if we find a translation we are going to update      
                 if ($first) {
                     $sql .= "SET ";
                     $first = FALSE;
-                }
-                else
+                } else
                     $sql.=" , ";
                 $Hyphen = $this->hyphenNeeded($key);
                 $val = $this->$key;
@@ -56,6 +56,45 @@ class OpslagMedium {
             return $id;
         } else {
             return null;
+        }
+    }
+public function updateObject($table, $id, $object) {
+
+        OpslagMedium::_getConnection();
+
+        $sql = "UPDATE " . $table . " ";
+        $first = TRUE;
+
+        foreach ($object as $key) {
+            $fieldname = $this->getDatafieldname($key);
+
+            if (!is_null($fieldname)) {  //only if we find a translation we are going to update 
+                if ($first) {
+                    $sql .= "SET ";
+                    $first = FALSE;
+                }
+                else
+                    $sql.=" , ";
+                $Hyphen = $this->hyphenNeeded($key);
+                $val = $this->$key;
+
+                if (is_bool($val)) {
+                    $val = ($val === true) ? '1' : '0';
+                }
+                if ($Hyphen == false) {
+                    $sql .= "$fieldname = " . $val;
+                } else {
+                    $sql .= "$fieldname = '" . $val . "'";
+                }
+            }
+        }
+        if ($first !== TRUE) { //in this case there wasn at least one field to update 
+            $sql .= " WHERE id=" . $id;
+
+            $res = mysql_query($sql);
+            if (!$res)
+                die('Something went wrong. Contact Adminstrator with errorcode = SO-' . $table . '.-' . mysql_errno() . '<br/>');
+            return $res;
         }
     }
 
@@ -165,46 +204,7 @@ class OpslagMedium {
         }
     }
 
-    public function updateObject($table, $id, $object) {
-
-        OpslagMedium::_getConnection();
-
-        $sql = "UPDATE " . $table . " ";
-        $first = TRUE;
-
-        foreach ($object as $key) {
-            $fieldname = $this->getDatafieldname($key);
-
-            if (!is_null($fieldname)) {  //only if we find a translation we are going to update 
-                if ($first) {
-                    $sql .= "SET ";
-                    $first = FALSE;
-                }
-                else
-                    $sql.=" , ";
-                $Hyphen = $this->hyphenNeeded($key);
-                $val = $this->$key;
-
-                if (is_bool($val)) {
-                    $val = ($val === true) ? '1' : '0';
-                }
-                if ($Hyphen == false) {
-                    $sql .= "$fieldname = " . $val;
-                } else {
-                    $sql .= "$fieldname = '" . $val . "'";
-                }
-            }
-        }
-        if ($first !== TRUE) { //in this case there wasn at least one field to update 
-            $sql .= " WHERE id=" . $id;
-
-            $res = mysql_query($sql);
-            if (!$res)
-                die('Something went wrong. Contact Adminstrator with errorcode = SO-' . $table . '.-' . mysql_errno() . '<br/>');
-            return $res;
-        }
-    }
-
+    
     public function callsp($sp) {
 
         OpslagMedium::_getConnection();

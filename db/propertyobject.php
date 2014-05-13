@@ -5,7 +5,6 @@ abstract class PropertyObject {
     protected $propertyTable = array();     //stores name/value pairs
     //that hook properties to
     //database field names
-    protected $changedProperties = array(); //List of properties that
     //have been modified
     protected $data;                        //Actual data from / for
     //the database
@@ -42,7 +41,7 @@ abstract class PropertyObject {
                     array($this, 'set' . $propertyName), $value
             );
         } else {
-            $valuetoupdate = $this->copyvalue($this->propertyTable[$propertyName]->convert, $propertyName, $value); // copy over the real value with the datatype
+            $valuetoupdate = $this->convertValue($this->propertyTable[$propertyName]->convert, $value); // copy over the real value with the datatype
             //what follows records the properties that have been changed ; used to update
 
 
@@ -63,6 +62,9 @@ abstract class PropertyObject {
         } else {
             switch ($this->propertyTable[$propertyName]->convert) {
                 case 'int':
+                    $Hyphen = false;
+                    break;
+                 case 'double':
                     $Hyphen = false;
                     break;
                 case 'bool':
@@ -96,11 +98,25 @@ abstract class PropertyObject {
             if (is_null($datafieldname) == false) {
                 $value = $data->{$datafieldname};
             }
-            $valuetoupdate = $this->copyvalue($obj->convert, $key, $value);
+            $valuetoupdate = $this->convertValue($obj->convert, $value);
             $this->data->$key = $valuetoupdate;
         }
     }
-
+    
+    
+  // gives back tot total dataobject
+    protected function getObjectData() {
+        return $this->data;
+    }
+    
+    protected function valtodata($key, $value) {
+        $datafieldname = $this->getDatafieldname($key);
+        if (is_null($datafieldname) == false) {  //if there is a datafield
+            $this->data->{$datafieldname} = $value;
+        } else {
+            $this->data->{$key} = $value; //if there is NO translation we expect the name of the data is the same as the key
+        }
+    }
     private function doesdatapropexist($prop) {
         if (is_null($this->data) == true) {
             $ret = false;
@@ -112,7 +128,7 @@ abstract class PropertyObject {
     }
 
     //copies one value into the right property with right datatype
-    private function copyvalue($convert, $key, $value) {
+    private function convertValue($convert, $value) {
         switch ($convert) {
             case 'int':
                 $value = intval($value);
@@ -132,26 +148,9 @@ abstract class PropertyObject {
         return ($value);
     }
 
-    // gives back tot total dataobject
-    protected function getObjectData() {
-        return $this->data;
-    }
+  
 
-    function __toString() {
-        $str = "<table width=75% border=1 cellpadding=5 cellspacing=5 >";
-        foreach ($this->data as $key => $value) {
-            if (gettype($value) == "boolean") {
-                if ($value === TRUE) {
-                    $value = 'Boolean IS True'; // because I want to check if it is really ok 
-                } else {
-                    $value = 'Boolean IS false';
-                }
-            }
-            $str .= "<tr><td valign=\"top\">$key</td><td>$value</td></tr>";
-        }
-        $str.="</table>";
-        return $str;
-    }
+    
 
 }
 
